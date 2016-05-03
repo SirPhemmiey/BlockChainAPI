@@ -1,10 +1,11 @@
 // create transaction to store data in blockchain
-// payload = {"data": "", "host" : ""}
+// payload = {"data": "", "host" : "", "seed" : ""}
 exports.createTransaction = function(req, res) {
 
 	var input = JSON.parse(JSON.stringify(req.body));
 	console.log("going to store data in block chain");
 	var host = input.host;
+	var seed = input.seed;
 
 	var express = require("express");
 	var openchain = require("openchain");
@@ -32,9 +33,14 @@ exports.createTransaction = function(req, res) {
 			return JSON.parse(data.body);
 		});
 	};
-
-	var seed = "0123456789abcdef0123456789abcdef";
-	// var seed = "blockflow";
+	
+	if(seed === ""){
+		console.log("going with default seed value");
+		seed = "0123456789abcdef0123456789abcdef";
+	}
+	
+	console.log("seed: "+seed);
+	// var seed = "0123456787abcdef0123456789abcdef";
 
 	// Load a private key from a seed
 	var privateKey = bitcore.HDPrivateKey.fromSeed(seed, "openchain");
@@ -68,6 +74,8 @@ exports.createTransaction = function(req, res) {
 		.submit();
 	}).then(function(result) {
 		console.log(result);
+		 res.header("Access-Control-Allow-Origin", "*");
+		 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		res.send(result);
 	});
 };
@@ -97,6 +105,8 @@ exports.getTransactionHashData = function(req, res) {
 			"mutation_hash" : mutation_hash,
 			"transaction_data" : data.mutation.records[0].value
 		};
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		res.send(json_res);
 	});
 };
@@ -277,11 +287,15 @@ exports.validateTransactionData = function(req, res) {
 														json_res = {
 															"status" : "true"
 														}
+														 res.header("Access-Control-Allow-Origin", "*");
+													    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 														res.send(json_res);
 													} else {
 														json_res = {
 															"status" : "false"
 														}
+														 res.header("Access-Control-Allow-Origin", "*");
+													    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 														res.send(json_res);
 													}
 
@@ -303,6 +317,8 @@ exports.validateTransactionData = function(req, res) {
 			"status" : "Not able to verify data for input mutation_hash: "
 					+ audit_mutation_hash
 		};
+		 res.header("Access-Control-Allow-Origin", "*");
+		    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 		res.send(json_res);
 	}
 }
@@ -327,6 +343,8 @@ exports.getMuationHashList = function(req, res) {
 				final_json.push(json_res);
 
 				if (data.length === final_json.length) {
+					res.header("Access-Control-Allow-Origin", "*");
+					res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 					res.send(final_json);
 				}
 
